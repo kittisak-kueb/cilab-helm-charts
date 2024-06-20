@@ -1,8 +1,8 @@
 name: ci-lab
 image:
-  operator: amdmanzero/ci-operator:v1.0.0
+  operator: amdmanzero/ci-operator:v1.3.0
   redis: redis:7.2.4
-  web: amdmanzero/ci-web:v1.0.0
+  web: amdmanzero/ci-web:v1.2.0
   ws: amdmanzero/ci-ws:v1.0.0
 saAnnotations:
 imagePullSecrets:
@@ -15,9 +15,8 @@ operConfigmap:
   GIT_IMAGE: alpine/git:2.43.0
   DEFAULT_IMAGE: busybox:latest
   JOB_BACKOFF_LIMIT: "0"
-  CI_OPERATOR_IMAGE: amdmanzero/ci-operator:v1.0.0
+  CI_OPERATOR_IMAGE: amdmanzero/ci-operator:v1.3.0
   CI_OPERATOR_NAME: ci-lab-operator
-  LOG_RETRY: "10"
   LOG_CONTAINER_NAME: runner
   LOG_TIME_SINCE: 10s
   TZ: Asia/Bangkok

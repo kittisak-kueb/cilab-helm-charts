@@ -29,6 +29,10 @@ spec:
         - name: nginx-conf
           configMap:
             name: {{ .Values.name }}-web
+        - name: rbac
+          configMap:
+            name: {{ .Values.name }}-rbac
+            optional: true
       containers:        
         - name: operator
           image: {{ .Values.image.operator }}
@@ -38,6 +42,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}-operator
+          volumeMounts:
+            - name: rbac
+              mountPath: /rbac
           readinessProbe:
             httpGet:
               path: /healthz
@@ -80,3 +87,46 @@ spec:
           imagePullPolicy: Always
           command: ["/bin/sh", "-c"]
           args: ["while true; ./cron-ci;do sleep 10; done;"]
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.name }}-operator
+                  key: NAMESPACE
+            - name: GIT_IMAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.name }}-operator
+                  key: GIT_IMAGE
+            - name: DEFAULT_IMAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.name }}-operator
+                  key: DEFAULT_IMAGE
+            - name: JOB_BACKOFF_LIMIT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.name }}-operator
+                  key: JOB_BACKOFF_LIMIT
+            - name: CI_OPERATOR_IMAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.name }}-operator
+                  key: CI_OPERATOR_IMAGE
+            - name: CI_OPERATOR_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.name }}-operator
+                  key: CI_OPERATOR_NAME
+            - name: LOG_CONTAINER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.name }}-operator
+                  key: LOG_CONTAINER_NAME
+            - name: LOG_TIME_SINCE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.name }}-operator
+                  key: LOG_TIME_SINCE
+            - name: TZ
+              value: Asia/Bangkok
