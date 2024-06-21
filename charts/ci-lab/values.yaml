@@ -6,10 +6,10 @@ tolerations:
 operConfigmap:
   API_PORT: "8080"
   ACCESS_ORIGIN: "*"
-  GIT_IMAGE: alpine/git:2.43.0
+  GIT_IMAGE: public.ecr.aws/w9d5y7i2/alpine/git:2.45.2@sha256:498fd5ec2ab64142a6c2e64737b24585d5c69c69f1c8a145babb1efef42b21d9
   DEFAULT_IMAGE: busybox:latest
   JOB_BACKOFF_LIMIT: "0"
-  CI_OPERATOR_IMAGE: amdmanzero/ci-operator:v1.3.0@sha256:12528977f9b27565bb04c238454c4e842c71050550d82b7708a3a0ef31af1425
+  CI_OPERATOR_IMAGE: public.ecr.aws/w9d5y7i2/ci-operator:v1.3.0@sha256:12528977f9b27565bb04c238454c4e842c71050550d82b7708a3a0ef31af1425
   CI_OPERATOR_NAME: ci-lab-operator
   LOG_CONTAINER_NAME: runner
   LOG_TIME_SINCE: 10s
