@@ -35,16 +35,13 @@ spec:
             optional: true
       containers:        
         - name: operator
-          image: amdmanzero/ci-operator:v1.3.0@sha256:12528977f9b27565bb04c238454c4e842c71050550d82b7708a3a0ef31af1425
+          image: {{ .Values.images.ci }}
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}-operator
-          env:
-            - name: NAMESPACE
-              value: {{ .Release.Namespace }}
           volumeMounts:
             - name: rbac
               mountPath: /rbac
@@ -55,7 +52,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 15
         - name: redis
-          image: redis:7.2.5-bookworm@sha256:e422889e156ebea83856b6ff973bfe0c86bce867d80def228044eeecf925592b
+          image: {{ .Values.images.redis }}
           imagePullPolicy: Always
           ports:
             - containerPort: 6379
@@ -67,7 +64,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 15
         - name: web
-          image: amdmanzero/ci-web:v1.2.0@sha256:c5cd7044181b2f20b98de782d1fa2f38f5c4f73b52f11f9570ef9a2bde720947
+          image: {{ .Values.images.web }}
           imagePullPolicy: Always
           command: ["/bin/sh", "-c"]
           args:
@@ -78,7 +75,7 @@ spec:
             - name: nginx-conf
               mountPath: /nginx-conf
         - name: ws
-          image: amdmanzero/ci-ws:v1.0.0@sha256:f00e443ed266ba70df57364949f4043516af7d905111174c4f8377fd2d4a47b0
+          image: {{ .Values.images.ws }}
           imagePullPolicy: Always
           ports:
             - containerPort: 3001
@@ -86,13 +83,16 @@ spec:
             - configMapRef:
                 name: {{ .Values.name }}-ws
         - name: cron
-          image: amdmanzero/ci-operator:v1.3.0@sha256:12528977f9b27565bb04c238454c4e842c71050550d82b7708a3a0ef31af1425
+          image: {{ .Values.images.ci }}
           imagePullPolicy: Always
           command: ["/bin/sh", "-c"]
           args: ["while true; ./cron-ci;do sleep 10; done;"]
           env:
             - name: NAMESPACE
-              value: {{ .Release.Namespace }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.name }}-operator
+                  key: NAMESPACE
             - name: GIT_IMAGE
               valueFrom:
                 configMapKeyRef:

@@ -1,4 +1,9 @@
 name: ci-lab
+images:
+  ci: amdmanzero/ci-operator:v1.3.2@sha256:8d01610333f9fab6073a9862c858443a7f9082e547cd44f326bb2e85ef9884c6
+  web: amdmanzero/ci-web:v1.2.2@sha256:3581ba1de7a8fac9e5733216862e476e498b50639fe4c4e7422c8e1d2ce5ae3d
+  ws: amdmanzero/ci-ws:v1.0.0@sha256:f00e443ed266ba70df57364949f4043516af7d905111174c4f8377fd2d4a47b0
+  redis: redis:7.2.5-bookworm@sha256:e422889e156ebea83856b6ff973bfe0c86bce867d80def228044eeecf925592b
 saAnnotations:
 imagePullSecrets:
 nodeSelector:
@@ -9,7 +14,6 @@ operConfigmap:
   GIT_IMAGE: alpine/git:2.43.0
   DEFAULT_IMAGE: busybox:latest
   JOB_BACKOFF_LIMIT: "0"
-  CI_OPERATOR_IMAGE: amdmanzero/ci-operator:v1.3.0@sha256:12528977f9b27565bb04c238454c4e842c71050550d82b7708a3a0ef31af1425
   CI_OPERATOR_NAME: ci-lab-operator
   LOG_CONTAINER_NAME: runner
   LOG_TIME_SINCE: 10s
