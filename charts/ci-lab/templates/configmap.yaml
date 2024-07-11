@@ -7,7 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   NAMESPACE: {{ .Release.Namespace }}
-  CI_OPERATOR_IMAGE: {{ .Release.images.ci }}
+  CI_OPERATOR_IMAGE: {{ .Values.images.ci }}
   {{- with .Values.operConfigmap }}
   {{- toYaml . | nindent 2 }}
   {{- end }}
