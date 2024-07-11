@@ -5,9 +5,9 @@ metadata:
     app.kubernetes.io/name: {{ .Values.name }}-operator
   name: {{ .Values.name }}-operator
   namespace: {{ .Release.Namespace }}
-{{- with .Values.operConfigmap }}
 data:
-  {{- toYaml . | nindent 2 }}
   NAMESPACE: {{ .Release.Namespace }}
   CI_OPERATOR_IMAGE: {{ .Values.images.ci }}
-{{- end }}
+  {{- with .Values.operConfigmap }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
