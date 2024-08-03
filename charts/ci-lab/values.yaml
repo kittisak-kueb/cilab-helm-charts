@@ -1,84 +1,59 @@
 name: ci-lab
 images:
-  ci: amdmanzero/ci-operator:v1.3.2@sha256:8d01610333f9fab6073a9862c858443a7f9082e547cd44f326bb2e85ef9884c6
+  ci: amdmanzero/ci-operator:v1.4.0@sha256:5a512f41c25e712560690d4b63681a39901ad70653dad89832a19f3a0507590b
   web: amdmanzero/ci-web:v1.2.2@sha256:3581ba1de7a8fac9e5733216862e476e498b50639fe4c4e7422c8e1d2ce5ae3d
   ws: amdmanzero/ci-ws:v1.0.0@sha256:f00e443ed266ba70df57364949f4043516af7d905111174c4f8377fd2d4a47b0
   redis: redis:7.2.5-bookworm@sha256:e422889e156ebea83856b6ff973bfe0c86bce867d80def228044eeecf925592b
+  git: alpine/git:2.43.0
+  default: busybox:latest
 saAnnotations:
 imagePullSecrets:
 nodeSelector:
 tolerations:
+affinity:
 operConfigmap:
-  API_PORT: "8080"
   ACCESS_ORIGIN: "*"
-  GIT_IMAGE: alpine/git:2.43.0
-  DEFAULT_IMAGE: busybox:latest
   JOB_BACKOFF_LIMIT: "0"
   CI_OPERATOR_NAME: ci-lab-operator
   LOG_CONTAINER_NAME: runner
   LOG_TIME_SINCE: 10s
-  TZ: Asia/Bangkok
-wsConfigmap:
-  PORT: "3001"
-  TZ: Asia/Bangkok
-webConfigmap:
-  nginx-conf.conf: |
-      server {
-        listen 80;
-        listen [::]:80;
-        server_name _;
-        root /usr/share/nginx/html;
-        index index.html index.htm;
-        client_max_body_size 0;
-        large_client_header_buffers 4 32k;
-
-        location / {
-          try_files $uri $uri/ /index.html;
-        }
-
-        location ~ ^/api {
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-URL $request_uri;     
-          rewrite ^/api(.*) $1 break;
-          proxy_pass http://127.0.0.1:8080;
-          proxy_buffer_size          128k;
-          proxy_buffers              4 256k;
-          proxy_busy_buffers_size    256k;
-        }
-
-        location ~ ^/socket.io {
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_http_version 1.1;
-          proxy_set_header X-Forwarded-Host $http_host;
-          proxy_set_header X-Forwarded-Proto $scheme;
-          proxy_set_header X-Forwarded-For $remote_addr;
-          proxy_set_header Host $host;
-          proxy_set_header Connection "upgrade";
-          proxy_cache_bypass $http_upgrade;
-          rewrite ^/socket.io(.*) /socket.io/$1 break;
-          proxy_pass http://127.0.0.1:3001;
-          proxy_buffer_size          128k;
-          proxy_buffers              4 256k;
-          proxy_busy_buffers_size    256k;
-        }
-
-        location ~ ^/static/ {
-          access_log off;
-        }
-
-        location /healthz {
-          add_header Content-Type text/plain;
-          access_log off;
-          return 200 "healthy\n";
-        }
-
-        location ~ /\.ht {
-          deny all;
-        }
-
-        error_page 500 502 503 504 /50x.html;
-        location = /50x.html {
-          root /usr/share/nginx/html;
-        }
+  INITIAL_ADMIN_USER: admin
+  GIT_SRC_PATH: "/git-src"
+oidc:
+  enable: false
+  config: |
+    {
+      "auth0": {
+        "clientId": "auth0_clientId",
+        "clientSecret": "AUTH0_CLIENT_SECRET",
+        "authorizeUrl": "https://cilab-test.auth0.com/oauth/authorize",
+        "tokenUrl": "https://cilab-test.auth0.com/oauth/token",
+        "redirectUrl": "http://localhost:3000/api/auth/callback/auth0",
+        "scopes": ["openid","profile","email","offline_access"],
+        "state": "",
+        "user": {
+          "method": "GET",
+          "endpoint": "https://cilab-test.auth0.com/userinfo",
+          "headers": {
+            "Accept": "application/json"
+          }
+        },
+        "mappingUser": {
+          "userId": "$nickname",
+          "oidcId": "$email",
+          "username": "$nickname",
+          "name": "$name",
+          "email": "$email",
+          "sub": "$sub"
+        },
+        "info":{
+          "name": "CILab Auth0",
+          "description": "Auth0 OIDC",
+          "sort": 1,
+          "logo": "logo-auth0.png",
+          "hint": "Enter your Email"
+        },
+        "logoutUrl": "https://cilab-test.auth0.com/v2/logout?client_id=auth0_clientId&returnTo=http://localhost:3000/logout-result"
       }
+    }
+timezone: Asia/Bangkok

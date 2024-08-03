@@ -5,3 +5,6 @@
 
 ## if helm install exists
 > helm upgrade ci-lab --namespace ci-lab .
+
+## debug template
+> helm template --namespace cilab --debug .

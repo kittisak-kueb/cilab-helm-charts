@@ -24,6 +24,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccount: {{ .Values.name }}-sa
       volumes:
         - name: nginx-conf
@@ -38,17 +42,19 @@ spec:
           image: {{ .Values.images.ci }}
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: {{ template "operPort" . }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}-operator
+          env:
+            {{- include "cilab.operEnv" . | nindent 12 }}
           volumeMounts:
             - name: rbac
               mountPath: /rbac
           readinessProbe:
             httpGet:
               path: /healthz
-              port: 8080
+              port: {{ template "operPort" . }}
             initialDelaySeconds: 5
             periodSeconds: 15
         - name: redis
@@ -56,6 +62,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 6379
+          env:
+            - name: TZ
+              value: {{ .Values.timezone | quote }}
           readinessProbe:
             exec:
               command:
@@ -71,6 +80,9 @@ spec:
             - cp -L /nginx-conf/nginx-conf.conf /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"
           ports:
             - containerPort: 80
+          env:
+            - name: TZ
+              value: {{ .Values.timezone | quote }}
           volumeMounts:
             - name: nginx-conf
               mountPath: /nginx-conf
@@ -78,55 +90,22 @@ spec:
           image: {{ .Values.images.ws }}
           imagePullPolicy: Always
           ports:
-            - containerPort: 3001
-          envFrom:
-            - configMapRef:
-                name: {{ .Values.name }}-ws
+            - containerPort: {{ template "wsPort" . }}
+          env:
+            {{- include "cilab.wsEnv" . | nindent 12 }}
         - name: cron
           image: {{ .Values.images.ci }}
           imagePullPolicy: Always
           command: ["/bin/sh", "-c"]
           args: ["while true; ./cron-ci;do sleep 10; done;"]
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.name }}-operator
           env:
             - name: NAMESPACE
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.name }}-operator
-                  key: NAMESPACE
-            - name: GIT_IMAGE
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.name }}-operator
-                  key: GIT_IMAGE
-            - name: DEFAULT_IMAGE
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.name }}-operator
-                  key: DEFAULT_IMAGE
-            - name: JOB_BACKOFF_LIMIT
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.name }}-operator
-                  key: JOB_BACKOFF_LIMIT
-            - name: CI_OPERATOR_IMAGE
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.name }}-operator
-                  key: CI_OPERATOR_IMAGE
-            - name: CI_OPERATOR_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.name }}-operator
-                  key: CI_OPERATOR_NAME
-            - name: LOG_CONTAINER_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.name }}-operator
-                  key: LOG_CONTAINER_NAME
-            - name: LOG_TIME_SINCE
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.name }}-operator
-                  key: LOG_TIME_SINCE
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
             - name: TZ
-              value: Asia/Bangkok
+              value: {{ .Values.timezone | quote }}
