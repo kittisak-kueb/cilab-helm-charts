@@ -7,7 +7,7 @@
 - name: APP_NAME
   value: {{ .Values.name | quote }}
 - name: API_PORT
-  value: {{ template "operPort" . | quote }}
+  value: "{{ template "operPort" . | quote }}"
 - name: NAMESPACE
   valueFrom:
     fieldRef:
@@ -102,7 +102,7 @@ nginx-conf.conf: |
 {{- end -}}
 {{- define "cilab.wsEnv" -}}
 - name: PORT
-  value: {{ template "wsPort" . | quote }}
+  value: "{{ template "wsPort" . | quote }}"
 - name: TZ
   value: {{ .Values.timezone | quote }}
 {{- end -}}
