@@ -1,0 +1,11 @@
+{{- if (default .Values.oidc.enable false)}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.name }}-rbac
+  name: {{ .Values.name }}-rbac
+  namespace: {{ .Release.Namespace }}
+data:
+  oidc.json: {{- toYaml .Values.oidc.config | nindent 2 }}
+{{- end }}
