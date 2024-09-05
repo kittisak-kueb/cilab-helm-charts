@@ -46,7 +46,7 @@ oidc:
         "clientSecret": "AUTH0_CLIENT_SECRET",
         "authorizeUrl": "https://cilab-test.auth0.com/oauth/authorize",
         "tokenUrl": "https://cilab-test.auth0.com/oauth/token",
-        "redirectUrl": "http://localhost:3000/api/auth/callback/auth0",
+        "redirectUrl": "http://localhost:3000/api/callback/auth0",
         "scopes": ["openid","profile","email","offline_access"],
         "state": "",
         "user": {
