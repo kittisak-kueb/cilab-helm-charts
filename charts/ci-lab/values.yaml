@@ -1,8 +1,8 @@
 name: ci-lab
 images:
-  ci: amdmanzero/ci-operator:v1.4.0@sha256:5a512f41c25e712560690d4b63681a39901ad70653dad89832a19f3a0507590b
-  web: amdmanzero/ci-web:v1.3.0@sha256:a1a0a5135785e75f5fb64c5a6dd0382ffdf5d5ec1babe8d2f9154b481e5afbf2
-  ws: amdmanzero/ci-ws:v1.0.0@sha256:f00e443ed266ba70df57364949f4043516af7d905111174c4f8377fd2d4a47b0
+  ci: amdmanzero/ci-operator:v1.5.0@sha256:8550e1234549803b866d0624d321d40b283371c609653c260dd85f2e681b0a96
+  web: amdmanzero/ci-web:v1.4.0@sha256:71252cd1e6fedbd84024e87ad3198c2c4ab666b6b6a4cc838d0d416050df8877
+  ws: amdmanzero/ci-ws:v1.1.0@sha256:36b79460aefa9d8c75cdfa7272da46da5567e49f6400116e483432cacb9c9751
   redis: redis:7.2.5-bookworm@sha256:e422889e156ebea83856b6ff973bfe0c86bce867d80def228044eeecf925592b
   git: alpine/git:2.43.0
   default: busybox:latest
@@ -43,7 +43,7 @@ oidc:
     {
       "auth0": {
         "clientId": "auth0_clientId",
-        "clientSecret": "AUTH0_CLIENT_SECRET",
+        "clientSecret": "OIDC_CLIENT_SECRET",
         "authorizeUrl": "https://cilab-test.auth0.com/oauth/authorize",
         "tokenUrl": "https://cilab-test.auth0.com/oauth/token",
         "redirectUrl": "http://localhost:3000/api/callback/auth0",
@@ -75,3 +75,4 @@ oidc:
       }
     }
 timezone: Asia/Bangkok
+OIDC_CLIENT_SECRET: ""
