@@ -47,7 +47,7 @@ spec:
             - configMapRef:
                 name: {{ .Values.name }}-operator
           env:
-            {{- include "cilab.operEnv" . | nindent 12 }}
+          {{- include "cilab.operEnv" . | nindent 10 }}
           volumeMounts:
             - name: rbac
               mountPath: /rbac

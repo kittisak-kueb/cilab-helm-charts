@@ -1,8 +1,8 @@
 name: ci-lab
 images:
-  ci: public.ecr.aws/w9d5y7i2/ci-operator:v1.4.0
-  web: public.ecr.aws/w9d5y7i2/ci-web:v1.3.0
-  ws: public.ecr.aws/w9d5y7i2/ci-ws:v1.0.0
+  ci: public.ecr.aws/w9d5y7i2/ci-operator:v1.5.0
+  web: public.ecr.aws/w9d5y7i2/ci-web:v1.4.0
+  ws: public.ecr.aws/w9d5y7i2/ci-ws:v1.1.0
   redis: public.ecr.aws/docker/library/redis:7.2.5-bookworm
   git: public.ecr.aws/w9d5y7i2/alpine/git:2.45.2@sha256:498fd5ec2ab64142a6c2e64737b24585d5c69c69f1c8a145babb1efef42b21d9
   default: busybox:latest
@@ -43,7 +43,7 @@ oidc:
     {
       "auth0": {
         "clientId": "auth0_clientId",
-        "clientSecret": "AUTH0_CLIENT_SECRET",
+        "clientSecret": "OIDC_CLIENT_SECRET",
         "authorizeUrl": "https://cilab-test.auth0.com/oauth/authorize",
         "tokenUrl": "https://cilab-test.auth0.com/oauth/token",
         "redirectUrl": "http://localhost:3000/api/callback/auth0",
@@ -75,3 +75,4 @@ oidc:
       }
     }
 timezone: Asia/Bangkok
+OIDC_CLIENT_SECRET: ""
